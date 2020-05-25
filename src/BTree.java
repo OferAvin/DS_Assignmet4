@@ -26,10 +26,10 @@ public class BTree<T extends Comparable<T>> {
      *            of the B-Tree.
      */
     public BTree(int order) {
-        this.minKeySize = order;
-        this.minChildrenSize = minKeySize + 1;
-        this.maxKeySize = 2 * minKeySize;
-        this.maxChildrenSize = maxKeySize + 1;
+        this.minKeySize = order-1;
+        this.minChildrenSize = order;
+        this.maxKeySize = 2 * order -1;
+        this.maxChildrenSize = 2 * order - 1;
     }
     
     //Task 2.1
