@@ -129,11 +129,28 @@ public class BTree<T extends Comparable<T>> {
     	//leaf node
     	if (node.numberOfChildren() == 0)
     		node.removeKey(index);
+    	//internal node
     	else {
-    		Node<T> lesser = node.getChild(index);
-            Node<T> greatest = this.getGreatestNode(lesser);
-            this.delete(greatest.getKey(greates.numberOfKeys() -1));
-            node.addKey(replaceValue);
+    		Node<T> prevChild = node.getChild(index);
+    		Node<T> nextChild = node.getChild(index+1);
+    		T keyToReplace = null;
+    		//try to find predecessor
+    		if (prevChild.numberOfKeys() > minKeySize) {
+	            Node<T> greatest = this.getGreatestNode(prevChild);
+	            keyToReplace = greatest.getKey(greatest.numberOfKeys() -1);
+    		}
+    		//try to find successor
+            else if (nextChild.numberOfKeys() > minKeySize){
+	            Node<T> greatest = this.getSmallestNode(nextChild);
+	            keyToReplace = greatest.getKey(greatest.numberOfKeys() -1);
+            }
+            else {
+            	this.combined(node);            	
+            }
+    		if(keyToReplace != null) {
+	            this.delete(keyToReplace);
+	            node.addKey(keyToReplace);
+    		}
     	}
     }
     
@@ -401,6 +418,13 @@ public class BTree<T extends Comparable<T>> {
         Node<T> node = nodeToGet;
         while (node.numberOfChildren() > 0) {
             node = node.getChild(node.numberOfChildren() - 1);
+        }
+        return node;
+    }
+    private Node<T> getSmallestNode(Node<T> nodeToGet) {
+        Node<T> node = nodeToGet;
+        while (node.numberOfChildren() > 0) {
+            node = node.getChild(0);
         }
         return node;
     }
