@@ -34,13 +34,107 @@ public class BTree<T extends Comparable<T>> {
     
     //Task 2.1
     public boolean insert(T value) {
-    	// TODO: implement your code here
-		return false;
+        if (root == null) {
+            root = new Node<T>(null, maxKeySize, maxChildrenSize);
+            root.addKey(value);
+        } else {
+            Node<T> node = root;
+            while (node != null) {
+            	if (node.numberOfKeys() >= maxKeySize) {	//node is full
+                  // Need to split up
+                  node = split(node);
+            	}
+              if (node.numberOfChildren() == 0) {		//node is leaf
+                    	node.addKey(value);
+                        // A-OK
+                        break;
+              }
+            	 // Navigate - non full non leaf
+                // Lesser or equal
+                T lesser = node.getKey(0);
+                if (value.compareTo(lesser) <= 0) {
+                    node = node.getChild(0);
+                    continue;
+                }
+                // Greater
+                int numberOfKeys = node.numberOfKeys();
+                int last = numberOfKeys - 1;
+                T greater = node.getKey(last);
+                if (value.compareTo(greater) > 0) {
+                    node = node.getChild(numberOfKeys);
+                    continue;
+                }
+
+                // Search internal nodes
+                for (int i = 1; i < node.numberOfKeys(); i++) {
+                    T prev = node.getKey(i - 1);
+                    T next = node.getKey(i);
+                    if (value.compareTo(prev) > 0 && value.compareTo(next) <= 0) {
+                        node = node.getChild(i);
+                        break;
+                    }
+                }
+            }
+        }
+
+        size++;
+
+        return true;
     }
 	
     public T delete(T value) {
-    	// TODO: implement your code here
-		return null;
+    	Node<T> node = root;
+    	while(node != null) {
+    		if (node.numberOfKeys() <= minKeySize) {
+    			this.combined(node);
+    		}
+    		//check if node contains value
+    		int valIndex = node.indexOf(value); 
+    		if(valIndex != -1) {
+    			deletFromNode(node,valIndex);
+    		}
+    		else {
+	    		//Navigate
+	            // Lesser or equal
+	            T lesser = node.getKey(0);
+	            if (value.compareTo(lesser) <= 0) {
+	                node = node.getChild(0);
+	                continue;
+	            }
+	            // Greater
+	            int numberOfKeys = node.numberOfKeys();
+	            int last = numberOfKeys - 1;
+	            T greater = node.getKey(last);
+	            if (value.compareTo(greater) > 0) {
+	                node = node.getChild(numberOfKeys);
+	                continue;
+	            }
+	
+	            // Search internal nodes 
+	            for (int i = 1; i < node.numberOfKeys(); i++) {
+	                T prev = node.getKey(i - 1);
+	                T next = node.getKey(i);
+	                if (value.compareTo(prev) > 0 && value.compareTo(next) <= 0) {
+	                    node = node.getChild(i);
+	                    break;
+	                }
+	            }
+    		}
+    	}
+    		
+    	return (T)node;
+
+    }
+    private void deletFromNode(Node<T> node, int index) {
+    	//leaf node
+    	if (node.numberOfChildren() == 0)
+    		node.removeKey(index);
+    	else {
+    		Node<T> lesser = node.getChild(index);
+            Node<T> greatest = this.getGreatestNode(lesser);
+            this.delete(greatest.getKey(greates.numberOfKeys() -1));
+            node.addKey(replaceValue);
+    	}
     }
     
 	//Task 2.2
@@ -66,7 +160,7 @@ public class BTree<T extends Comparable<T>> {
                         break;
                     }                         
                     // Need to split up
-                    split(node);
+                    node = split(node);
                     break;
                 }
                 // Navigate
@@ -110,7 +204,7 @@ public class BTree<T extends Comparable<T>> {
      * @param nodeToSplit
      *            to split.
      */
-    private void split(Node<T> nodeToSplit) {
+    private Node<T> split(Node<T> nodeToSplit) {
         Node<T> node = nodeToSplit;
         int numberOfKeys = node.numberOfKeys();
         int medianIndex = numberOfKeys / 2;
@@ -154,9 +248,11 @@ public class BTree<T extends Comparable<T>> {
             parent.removeChild(node);
             parent.addChild(left);
             parent.addChild(right);
-
+            node = parent; 			//go back to parent to find the place to insert
+            
             if (parent.numberOfKeys() > maxKeySize) split(parent);
         }
+        return node;
     }
 
     /**
