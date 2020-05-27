@@ -33,12 +33,18 @@ public class BTree<T extends Comparable<T>> {
     }
     
     //Task 2.1
+    
     public boolean insert(T value) {
+    	boolean inserted = insert(value, root);
+    	return inserted;
+    }
+    
+    public boolean insert(T value, Node<T>node) {
         if (root == null) {
             root = new Node<T>(null, maxKeySize, maxChildrenSize);
             root.addKey(value);
-        } else {
-            Node<T> node = root;
+        } 
+        else {
             while (node != null) {
             	if (node.numberOfKeys() >= maxKeySize) {	//node is full
                   // Need to split up
@@ -154,40 +160,32 @@ public class BTree<T extends Comparable<T>> {
         }
         return null;
 	}
-    
-//    private void deletFromNode(Node<T> node, int index) {
-//    	//leaf node
-//    	if (node.numberOfChildren() == 0)
-//    		node.removeKey(index);
-//    	//internal node
-//    	else {
-//    		Node<T> prevChild = node.getChild(index);
-//    		Node<T> nextChild = node.getChild(index+1);
-//    		T keyToReplace = null;
-//    		//try to find predecessor
-//    		if (prevChild.numberOfKeys() > minKeySize) {
-//	            Node<T> greatest = this.getGreatestNode(prevChild);
-//	            keyToReplace = greatest.getKey(greatest.numberOfKeys() -1);
-//    		}
-//    		//try to find successor
-//            else if (nextChild.numberOfKeys() > minKeySize){
-//	            Node<T> greatest = this.getSmallestNode(nextChild);
-//	            keyToReplace = greatest.getKey(greatest.numberOfKeys() -1);
-//            }
-//            else {
-//            	this.combined(node);            	
-//            }
-//    		if(keyToReplace != null) {
-//	            this.delete(keyToReplace);
-//	            node.addKey(keyToReplace);
-//    		}
-//    	}
-//    }
+
     
 	//Task 2.2
     public boolean insert2pass(T value) {
-    	// TODO: implement your code here
-		return false;
+        if (root == null) {
+            root = new Node<T>(null, maxKeySize, maxChildrenSize);
+            root.addKey(value);
+        } else {
+        	Node<T> firstToSplit = null;
+        	Node<T> node = root;
+        	while (node != null) {
+        		if(node.numberOfKeys() == maxKeySize && firstToSplit == null)
+        			firstToSplit = node;
+        		 else if(node.numberOfKeys() < maxKeySize) 
+					firstToSplit =null;
+				if(node.numberOfChildren() == 0)
+					break;
+        		node = nevigate(value, node);
+        	}
+        	if(firstToSplit == null)
+        		node.addKey(value);
+        	else {
+				insert(value,firstToSplit);
+			}       		        	        	
+        }
+		return true;
     }
     
     /**
