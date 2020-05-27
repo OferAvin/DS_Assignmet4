@@ -88,47 +88,73 @@ public class BTree<T extends Comparable<T>> {
     
 	
     private T delete(T value, Node<T> node) {
-    	while(node != null) {
-    		if (node.numberOfKeys() <= minKeySize) {
-    			this.combined(node);
+    	if (node == null) return null;       
+    	T deleted = null;
+    	int indexToRemove =node.indexOf(value);
+    	if(indexToRemove == -1) {
+    		Node<T>nextChild = nevigate(value, node);
+    		if(nextChild.numberOfKeys() == minKeySize) {
+    			combined(nextChild);
+    			delete(value, nextChild);
     		}
-    		//check if node contains value
-    		int valIndex = node.indexOf(value); 
-    		if(valIndex != -1) {
-    			deletFromNode(node,valIndex);
-    		}
-    		else {
-	    		//Navigate
-	            // Lesser or equal
-	            T lesser = node.getKey(0);
-	            if (value.compareTo(lesser) <= 0) {
-	                node = node.getChild(0);
-	                continue;
-	            }
-	            // Greater
-	            int numberOfKeys = node.numberOfKeys();
-	            int last = numberOfKeys - 1;
-	            T greater = node.getKey(last);
-	            if (value.compareTo(greater) > 0) {
-	                node = node.getChild(numberOfKeys);
-	                continue;
-	            }
-	
-	            // Search internal nodes 
-	            for (int i = 1; i < node.numberOfKeys(); i++) {
-	                T prev = node.getKey(i - 1);
-	                T next = node.getKey(i);
-	                if (value.compareTo(prev) > 0 && value.compareTo(next) <= 0) {
-	                    node = node.getChild(i);
-	                    break;
-	                }
-	            }
-    		}
+    		else 
+    			delete(value, nextChild);			
+    	}
+    	else {
+			if(node.numberOfChildren()==0)
+				node.removeKey(value);
+			else {				
+				Node<T>toReplace = null;
+				if(node.getChild(indexToRemove).numberOfKeys()>minKeySize) {
+					toReplace = getGreatestNode(node.getChild(indexToRemove));
+					T predecessor = toReplace.getKey(toReplace.numberOfKeys()-1);
+					delete(predecessor, node);
+					node.keys[indexToRemove] = predecessor;
+				}
+				else if (node.getChild(indexToRemove+1).numberOfKeys()>minKeySize) {
+					toReplace = getSmallestNode(node.getChild(indexToRemove+1));
+					T successor = toReplace.getKey(0);
+					delete(successor, node);
+					node.keys[indexToRemove] = successor;
+				}
+				else {
+					combined(node.getChild(indexToRemove+1));
+					delete(value, node.getChild(indexToRemove));
+					
+				}										
+			}
     	}
     		
-    	return (T)node;
+    	return deleted;
 
     }
+    private Node<T> nevigate(T value, Node<T> node) {
+        // Lesser or equal
+        T lesser = node.getKey(0);
+        if (value.compareTo(lesser) <= 0) {
+           return node.getChild(0);
+           
+        }
+        // Greater
+        int numberOfKeys = node.numberOfKeys();
+        int last = numberOfKeys - 1;
+        T greater = node.getKey(last);
+        if (value.compareTo(greater) > 0) {
+        	return node.getChild(last);
+            
+        }
+
+        // Search internal nodes
+        for (int i = 1; i < node.numberOfKeys(); i++) {
+            T prev = node.getKey(i - 1);
+            T next = node.getKey(i);
+            if (value.compareTo(prev) > 0 && value.compareTo(next) <= 0) {
+            	return node.getChild(i);
+            }
+        }
+        return null;
+	}
+    
 //    private void deletFromNode(Node<T> node, int index) {
 //    	//leaf node
 //    	if (node.numberOfChildren() == 0)
