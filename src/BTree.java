@@ -108,13 +108,13 @@ public class BTree<T extends Comparable<T>> {
 				if(node.getChild(indexToRemove).numberOfKeys()>minKeySize) {
 					toReplace = getGreatestNode(node.getChild(indexToRemove));
 					T predecessor = toReplace.getKey(toReplace.numberOfKeys()-1);
-					delete(predecessor, node);
+					delete(predecessor, node.getChild(indexToRemove));
 					node.keys[indexToRemove] = predecessor;
 				}
 				else if (node.getChild(indexToRemove+1).numberOfKeys()>minKeySize) {
 					toReplace = getSmallestNode(node.getChild(indexToRemove+1));
 					T successor = toReplace.getKey(0);
-					delete(successor, node);
+					delete(successor, node.getChild(indexToRemove+1));
 					node.keys[indexToRemove] = successor;
 				}
 				else {
@@ -140,7 +140,7 @@ public class BTree<T extends Comparable<T>> {
         int last = numberOfKeys - 1;
         T greater = node.getKey(last);
         if (value.compareTo(greater) > 0) {
-        	return node.getChild(last);
+        	return node.getChild(last+1);
             
         }
 

@@ -5,34 +5,44 @@ public class test {
 		BTree<Integer> Ofer = new BTree<Integer>(2);
 //		buildRandTree(Ofer,20,100);
 //		buildTree(Ofer,20,100);
-//		insertToTree(Ofer,17,200);
+//		insertToTree(Ofer,10,5);
 //		System.out.println("finish");
-//		insertRandTree(Ofer,17,200);
+//		insertRandTree(Ofer,10,5);
 		
-		Ofer.insert(2);
+		Ofer.insert(0);
+		System.out.println(Ofer.toString());
+		Ofer.insert(0);
 		System.out.println(Ofer.toString());
 		Ofer.insert(4);
 		System.out.println(Ofer.toString());
-		Ofer.insert(6);
+		Ofer.insert(4);
+		System.out.println(Ofer.toString());
+		Ofer.insert(0);
 		System.out.println(Ofer.toString());
 		Ofer.insert(1);
 		System.out.println(Ofer.toString());
-		Ofer.insert(3);
+		Ofer.insert(4);
 		System.out.println(Ofer.toString());
-		Ofer.insert(5);
+		Ofer.insert(1);
 		System.out.println(Ofer.toString());
-		Ofer.insert(7);
+		Ofer.insert(1);
 		System.out.println(Ofer.toString());
-		Ofer.insert(8);
+		Ofer.insert(1);
 		System.out.println(Ofer.toString());
-		Ofer.remove(5);
+		Ofer.delete(0);
 		System.out.println(Ofer.toString());
-		Ofer.remove(2);
-		System.out.println(Ofer.toString());
-		Ofer.remove(3);
-		System.out.println(Ofer.toString());
-		Ofer.remove(8);
-		System.out.println(Ofer.toString());
+//		Ofer.delete(6);
+//		System.out.println(Ofer.toString());
+//		Ofer.delete(7);
+//		System.out.println(Ofer.toString());
+//		Ofer.insert(9);
+//		System.out.println(Ofer.toString());
+//		System.out.println("Done \n");
+//		Ofer.delete(4);
+//		System.out.println(Ofer.toString());
+//		Ofer.delete(8);
+//		System.out.println(Ofer.toString());
+//		
 	}
 	private static void buildRandTree(BTree<Integer> Tree,int size,int upperBound) {	
 		for (int i = 0; i < size ; i ++) {
