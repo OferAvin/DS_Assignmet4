@@ -81,9 +81,13 @@ public class BTree<T extends Comparable<T>> {
 
         return true;
     }
-	
     public T delete(T value) {
-    	Node<T> node = root;
+    	T deleted = delete(value, root);
+    	return deleted;
+    }
+    
+	
+    private T delete(T value, Node<T> node) {
     	while(node != null) {
     		if (node.numberOfKeys() <= minKeySize) {
     			this.combined(node);
@@ -125,34 +129,34 @@ public class BTree<T extends Comparable<T>> {
     	return (T)node;
 
     }
-    private void deletFromNode(Node<T> node, int index) {
-    	//leaf node
-    	if (node.numberOfChildren() == 0)
-    		node.removeKey(index);
-    	//internal node
-    	else {
-    		Node<T> prevChild = node.getChild(index);
-    		Node<T> nextChild = node.getChild(index+1);
-    		T keyToReplace = null;
-    		//try to find predecessor
-    		if (prevChild.numberOfKeys() > minKeySize) {
-	            Node<T> greatest = this.getGreatestNode(prevChild);
-	            keyToReplace = greatest.getKey(greatest.numberOfKeys() -1);
-    		}
-    		//try to find successor
-            else if (nextChild.numberOfKeys() > minKeySize){
-	            Node<T> greatest = this.getSmallestNode(nextChild);
-	            keyToReplace = greatest.getKey(greatest.numberOfKeys() -1);
-            }
-            else {
-            	this.combined(node);            	
-            }
-    		if(keyToReplace != null) {
-	            this.delete(keyToReplace);
-	            node.addKey(keyToReplace);
-    		}
-    	}
-    }
+//    private void deletFromNode(Node<T> node, int index) {
+//    	//leaf node
+//    	if (node.numberOfChildren() == 0)
+//    		node.removeKey(index);
+//    	//internal node
+//    	else {
+//    		Node<T> prevChild = node.getChild(index);
+//    		Node<T> nextChild = node.getChild(index+1);
+//    		T keyToReplace = null;
+//    		//try to find predecessor
+//    		if (prevChild.numberOfKeys() > minKeySize) {
+//	            Node<T> greatest = this.getGreatestNode(prevChild);
+//	            keyToReplace = greatest.getKey(greatest.numberOfKeys() -1);
+//    		}
+//    		//try to find successor
+//            else if (nextChild.numberOfKeys() > minKeySize){
+//	            Node<T> greatest = this.getSmallestNode(nextChild);
+//	            keyToReplace = greatest.getKey(greatest.numberOfKeys() -1);
+//            }
+//            else {
+//            	this.combined(node);            	
+//            }
+//    		if(keyToReplace != null) {
+//	            this.delete(keyToReplace);
+//	            node.addKey(keyToReplace);
+//    		}
+//    	}
+//    }
     
 	//Task 2.2
     public boolean insert2pass(T value) {
