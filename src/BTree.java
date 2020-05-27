@@ -81,9 +81,13 @@ public class BTree<T extends Comparable<T>> {
 
         return true;
     }
-	
     public T delete(T value) {
-    	Node<T> node = root;
+    	T deleted = delete(value, root);
+    	return deleted;
+    }
+    
+	
+    private T delete(T value, Node<T> node) {
     	while(node != null) {
     		if (node.numberOfKeys() <= minKeySize) {
     			this.combined(node);
@@ -125,17 +129,34 @@ public class BTree<T extends Comparable<T>> {
     	return (T)node;
 
     }
-    private void deletFromNode(Node<T> node, int index) {
-    	//leaf node
-    	if (node.numberOfChildren() == 0)
-    		node.removeKey(index);
-    	else {
-    		Node<T> lesser = node.getChild(index);
-            Node<T> greatest = this.getGreatestNode(lesser);
-            this.delete(greatest.getKey(greates.numberOfKeys() -1));
-            node.addKey(replaceValue);
-    	}
-    }
+//    private void deletFromNode(Node<T> node, int index) {
+//    	//leaf node
+//    	if (node.numberOfChildren() == 0)
+//    		node.removeKey(index);
+//    	//internal node
+//    	else {
+//    		Node<T> prevChild = node.getChild(index);
+//    		Node<T> nextChild = node.getChild(index+1);
+//    		T keyToReplace = null;
+//    		//try to find predecessor
+//    		if (prevChild.numberOfKeys() > minKeySize) {
+//	            Node<T> greatest = this.getGreatestNode(prevChild);
+//	            keyToReplace = greatest.getKey(greatest.numberOfKeys() -1);
+//    		}
+//    		//try to find successor
+//            else if (nextChild.numberOfKeys() > minKeySize){
+//	            Node<T> greatest = this.getSmallestNode(nextChild);
+//	            keyToReplace = greatest.getKey(greatest.numberOfKeys() -1);
+//            }
+//            else {
+//            	this.combined(node);            	
+//            }
+//    		if(keyToReplace != null) {
+//	            this.delete(keyToReplace);
+//	            node.addKey(keyToReplace);
+//    		}
+//    	}
+//    }
     
 	//Task 2.2
     public boolean insert2pass(T value) {
@@ -401,6 +422,13 @@ public class BTree<T extends Comparable<T>> {
         Node<T> node = nodeToGet;
         while (node.numberOfChildren() > 0) {
             node = node.getChild(node.numberOfChildren() - 1);
+        }
+        return node;
+    }
+    private Node<T> getSmallestNode(Node<T> nodeToGet) {
+        Node<T> node = nodeToGet;
+        while (node.numberOfChildren() > 0) {
+            node = node.getChild(0);
         }
         return node;
     }
