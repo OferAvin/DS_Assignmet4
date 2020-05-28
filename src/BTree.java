@@ -55,33 +55,7 @@ public class BTree<T extends Comparable<T>> {
                         // A-OK
                         break;
               } 
-              node = nevigate(value, node);
-               
-//            	 // Navigate - non full non leaf
-//                // Lesser or equal
-//                T lesser = node.getKey(0);
-//                if (value.compareTo(lesser) <= 0) {
-//                    node = node.getChild(0);
-//                    continue;
-//                }
-//                // Greater
-//                int numberOfKeys = node.numberOfKeys();
-//                int last = numberOfKeys - 1;
-//                T greater = node.getKey(last);
-//                if (value.compareTo(greater) > 0) {
-//                    node = node.getChild(numberOfKeys);
-//                    continue;
-//                }
-//
-//                // Search internal nodes
-//                for (int i = 1; i < node.numberOfKeys(); i++) {
-//                    T prev = node.getKey(i - 1);
-//                    T next = node.getKey(i);
-//                    if (value.compareTo(prev) > 0 && value.compareTo(next) <= 0) {
-//                        node = node.getChild(i);
-//                        break;
-//                    }
-//                }
+              node = nevigate(value, node);				//find next node to go
             }
         }
 
@@ -99,33 +73,35 @@ public class BTree<T extends Comparable<T>> {
     	if (node == null) return null;       
     	T deleted = null;
     	int indexToRemove =node.indexOf(value);
+    	//current node does not contains value to delete
     	if(indexToRemove == -1) {
-    		Node<T>nextChild = nevigate(value, node);
-    		if(nextChild.numberOfKeys() == minKeySize) {
+    		Node<T>nextChild = nevigate(value, node); 	//find next node to go
+    		//next child is in the minimum
+    		if(nextChild.numberOfKeys() == minKeySize) 
     			combined(nextChild);
-    			delete(value, nextChild);
-    		}
-    		else 
-    			delete(value, nextChild);			
+			delete(value, nextChild);
     	}
+    	//current node contains value to delete
     	else {
-			if(node.numberOfChildren()==0)
+			if(node.numberOfChildren()==0)	//current node is a leaf
 				node.removeKey(value);
 			else {				
 				Node<T>toReplace = null;
+				//try to find predecessor
 				if(node.getChild(indexToRemove).numberOfKeys()>minKeySize) {
 					toReplace = getGreatestNode(node.getChild(indexToRemove));
 					T predecessor = toReplace.getKey(toReplace.numberOfKeys()-1);
 					delete(predecessor, node.getChild(indexToRemove));
 					node.keys[indexToRemove] = predecessor;
 				}
+				//try to find successor
 				else if (node.getChild(indexToRemove+1).numberOfKeys()>minKeySize) {
 					toReplace = getSmallestNode(node.getChild(indexToRemove+1));
 					T successor = toReplace.getKey(0);
 					delete(successor, node.getChild(indexToRemove+1));
 					node.keys[indexToRemove] = successor;
 				}
-				else {
+				else {	//can't get predecessor and successor - need to merge
 					combined(node.getChild(indexToRemove+1));
 					delete(value, node.getChild(indexToRemove));
 					
