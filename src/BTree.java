@@ -54,32 +54,34 @@ public class BTree<T extends Comparable<T>> {
                     	node.addKey(value);
                         // A-OK
                         break;
-              }
-            	 // Navigate - non full non leaf
-                // Lesser or equal
-                T lesser = node.getKey(0);
-                if (value.compareTo(lesser) <= 0) {
-                    node = node.getChild(0);
-                    continue;
-                }
-                // Greater
-                int numberOfKeys = node.numberOfKeys();
-                int last = numberOfKeys - 1;
-                T greater = node.getKey(last);
-                if (value.compareTo(greater) > 0) {
-                    node = node.getChild(numberOfKeys);
-                    continue;
-                }
-
-                // Search internal nodes
-                for (int i = 1; i < node.numberOfKeys(); i++) {
-                    T prev = node.getKey(i - 1);
-                    T next = node.getKey(i);
-                    if (value.compareTo(prev) > 0 && value.compareTo(next) <= 0) {
-                        node = node.getChild(i);
-                        break;
-                    }
-                }
+              } 
+              node = nevigate(value, node);
+               
+//            	 // Navigate - non full non leaf
+//                // Lesser or equal
+//                T lesser = node.getKey(0);
+//                if (value.compareTo(lesser) <= 0) {
+//                    node = node.getChild(0);
+//                    continue;
+//                }
+//                // Greater
+//                int numberOfKeys = node.numberOfKeys();
+//                int last = numberOfKeys - 1;
+//                T greater = node.getKey(last);
+//                if (value.compareTo(greater) > 0) {
+//                    node = node.getChild(numberOfKeys);
+//                    continue;
+//                }
+//
+//                // Search internal nodes
+//                for (int i = 1; i < node.numberOfKeys(); i++) {
+//                    T prev = node.getKey(i - 1);
+//                    T next = node.getKey(i);
+//                    if (value.compareTo(prev) > 0 && value.compareTo(next) <= 0) {
+//                        node = node.getChild(i);
+//                        break;
+//                    }
+//                }
             }
         }
 
@@ -168,21 +170,21 @@ public class BTree<T extends Comparable<T>> {
             root = new Node<T>(null, maxKeySize, maxChildrenSize);
             root.addKey(value);
         } else {
-        	Node<T> firstToSplit = null;
-        	Node<T> node = root;
+        	Node<T> firstToSplit = null; //The first node in the sequence of full nodes till the leaf
+        	Node<T> node = root;		// node in path
         	while (node != null) {
-        		if(node.numberOfKeys() == maxKeySize && firstToSplit == null)
+        		if(node.numberOfKeys() == maxKeySize && firstToSplit == null) //node is full and the previous node isn't
         			firstToSplit = node;
-        		 else if(node.numberOfKeys() < maxKeySize) 
+        		 else if(node.numberOfKeys() < maxKeySize) // end of sequence
 					firstToSplit =null;
-				if(node.numberOfChildren() == 0)
+				if(node.numberOfChildren() == 0) //node is leaf
 					break;
-        		node = nevigate(value, node);
+        		node = nevigate(value, node); 	// next node in path
         	}
-        	if(firstToSplit == null)
+        	if(firstToSplit == null)	// no valid sequence
         		node.addKey(value);
         	else {
-				insert(value,firstToSplit);
+				insert(value,firstToSplit); // use insert 1pass from the first node in sequence
 			}       		        	        	
         }
 		return true;
