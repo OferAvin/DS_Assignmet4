@@ -6,10 +6,10 @@ public class BTree<T extends Comparable<T>> {
 
     // Default to 2-3 Tree
     private int minKeySize = 1;
-    private int minChildrenSize = minKeySize + 1; // 2
-    private int maxKeySize = 2 * minKeySize; // 2
-    private int maxChildrenSize = maxKeySize + 1; // 3
-
+    private int minChildrenSize = 2; 
+    private int maxKeySize = 2 * minChildrenSize - 1; 
+    private int maxChildrenSize = 2 * minChildrenSize;
+    
     private Node<T> root = null;
     private int size = 0;
 
