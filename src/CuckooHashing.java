@@ -13,7 +13,7 @@ public class CuckooHashing {
     private String[] array; // The array of elements
     private int currentSize; // The number of occupied cells
     private ArrayList<String> stash; //List of items that couldn't find a place
-    
+    private Stack<String> backTrack;
     /**
      * Construct the hash table.
      */
@@ -33,6 +33,8 @@ public class CuckooHashing {
         makeEmpty();
         hashFunctions = hf;
         numHashFunctions = hf.getNumberOfFunctions();
+        backTrack = new Stack<String>();
+        
     }
     
     /**
@@ -52,6 +54,7 @@ public class CuckooHashing {
     }
     
     private boolean insertHelper1(String x) {
+    	backTrack.push(x);
         while (true) {
             int pos = -1;
             int kick_pos = -1;
@@ -102,7 +105,10 @@ public class CuckooHashing {
     }
 	
 	public void undo() {
-		// TODO: implement your code here
+		if (!backTrack.isEmpty()) {
+			String element = backTrack.pop();
+			this.removeHalper(element);
+		}
 	}
 
     /**
@@ -176,6 +182,11 @@ public class CuckooHashing {
      * @return true if item was found and removed
      */
     public boolean remove(String x) {
+    	backTrack.clear();		//
+        return removeHalper(x);
+    }
+    
+    public boolean removeHalper(String x) {
         int pos = findPos(x);
         if(pos==-1)
         	return false;
@@ -186,7 +197,7 @@ public class CuckooHashing {
         	this.stash.remove(x);
         }
         return true;
-    }
+    }    
 
     /**
      * Make the hash table logically empty.
