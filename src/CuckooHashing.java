@@ -13,7 +13,8 @@ public class CuckooHashing {
     private String[] array; // The array of elements
     private int currentSize; // The number of occupied cells
     private ArrayList<String> stash; //List of items that couldn't find a place
-    private Stack<String> backTrack;
+    private Stack<Object> backTrackST;
+    ArrayList<ArrayList<String>> backTrackLocations;
     /**
      * Construct the hash table.
      */
@@ -33,8 +34,10 @@ public class CuckooHashing {
         makeEmpty();
         hashFunctions = hf;
         numHashFunctions = hf.getNumberOfFunctions();
-        backTrack = new Stack<String>();
-        
+        backTrackST = new Stack<Object>();
+        backTrackLocations = new ArrayList<ArrayList<String>>();
+        for(int i=0;i<this.capacity();i++)
+        	backTrackLocations.add(i, new ArrayList<String>());
     }
     
     /**
@@ -54,7 +57,6 @@ public class CuckooHashing {
     }
     
     private boolean insertHelper1(String x) {
-    	backTrack.push(x);
         while (true) {
             int pos = -1;
             int kick_pos = -1;
@@ -79,6 +81,11 @@ public class CuckooHashing {
                     cycle_tester.get(pos).add(x);
                     if (array[pos] == null) {
                         array[pos] = x;
+                        backTrackLocations.get(pos).add(x);
+                        if (count == 0) {// push only the new element to ST
+                        	backTrackST.push(x);
+                        	backTrackST.push(pos);
+                        }
                         currentSize++;
                         return true;
                     }
@@ -93,6 +100,11 @@ public class CuckooHashing {
                 // none of the spots are available, kick out item in kick_pos
                 String tmp = array[kick_pos];
                 array[kick_pos] = x;
+                backTrackLocations.get(kick_pos).add(x);
+                if (count == 0) {// push only the new element to ST
+                	backTrackST.push(x);
+                	backTrackST.push(kick_pos);
+                }
                 x = tmp;
             }
             //insertion got into a cycle use overflow list
@@ -105,12 +117,36 @@ public class CuckooHashing {
     }
 	
 	public void undo() {
-		if (!backTrack.isEmpty()) {
-			String element = backTrack.pop();
+		if (!backTrackST.isEmpty()) {
+			int pos = (int)backTrackST.pop();
+			String element = (String)backTrackST.pop();
 			this.removeHalper(element);
+			String toReassign = null;
+			
+			ArrayList<String> btLocation = backTrackLocations.get(pos);
+			btLocation.remove(btLocation.size()-1);
+//			kick-out occurred
+			while(!btLocation.isEmpty()) {
+				toReassign = btLocation.get(btLocation.size()-1);
+				int idxToUndo = findPos(toReassign);
+				this.removeHalper(toReassign);
+
+				if(idxToUndo < this.capacity()) {	//kicked-out element is in array
+					btLocation = backTrackLocations.get(idxToUndo);
+					btLocation.remove(btLocation.size()-1);//delete toReassign from locations 
+					array[pos] = toReassign;
+					pos = idxToUndo;
+					btLocation = backTrackLocations.get(pos);
+				}
+
+				else {							//kicked-out element is in stash
+					array[pos] = toReassign;
+					break;
+				}
+			}
 		}
 	}
-
+ 
     /**
      * @param x the item
      * @param i index of hash function in hash family
