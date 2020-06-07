@@ -10,14 +10,29 @@ public class test {
 //		insertRandTree(Ofer,10,5);
 		StringHashMethods strHashOfer = new StringHashMethods();
 		CuckooHashing hashOfer = new CuckooHashing(strHashOfer,6);
-		hashOfer.insert("ab");
-		hashOfer.insert("ba");
-		hashOfer.insert("cd");
-		hashOfer.insert("ad");
-		hashOfer.insert("ef");
-		hashOfer.insert("fh");
-		hashOfer.insert("cg");
+		hashOfer.insert("ag");
 		System.out.println(hashOfer.toString());
+		hashOfer.insert("ba");
+		System.out.println(hashOfer.toString());
+		hashOfer.insert("cd");
+		System.out.println(hashOfer.toString());
+		hashOfer.insert("ad");
+		System.out.println(hashOfer.toString());
+		hashOfer.insert("ef");
+		System.out.println(hashOfer.toString());
+		hashOfer.insert("fh");
+		System.out.println(hashOfer.toString());
+		hashOfer.insert("cg");
+		System.out.println(hashOfer.toString()+ " insert till here");
+		hashOfer.undo();
+		System.out.println(hashOfer.toString()+ " 1st undo");
+		hashOfer.undo();
+		System.out.println(hashOfer.toString()+ " 2nd undo");
+		hashOfer.remove("ad");
+		System.out.println(hashOfer.toString()+ " 1st remove");
+		hashOfer.undo();
+		System.out.println(hashOfer.toString());
+
 		
 
 		Ofer.insert(0);
@@ -184,6 +199,29 @@ public class test {
 //		Ofer.delete(8);
 //		System.out.println(Ofer.toString());
 //		
+
+		hashOfer.remove("ba");
+		System.out.println(hashOfer.toString()+ " 2nd remove");
+		hashOfer.insert("fh");
+		System.out.println(hashOfer.toString()+ " insert fh");
+		hashOfer.insert("fh");
+		System.out.println(hashOfer.toString());
+		hashOfer.undo();
+		System.out.println(hashOfer.toString());
+//		hashOfer.undo();
+//		System.out.println(hashOfer.toString());
+//		hashOfer.undo();
+//		System.out.println(hashOfer.toString());
+//		hashOfer.undo();
+//		System.out.println(hashOfer.toString());
+
+//		hashOfer.remove("ba");
+//		System.out.println(hashOfer.toString()+ " remove");
+//		hashOfer.undo();
+//		System.out.println(hashOfer.toString()+ " done");
+//		hashOfer.remove("ba");
+//		System.out.println(hashOfer.toString());
+
 
 	}
 	private static void buildRandTree(BTree<Integer> Tree,int size,int upperBound) {	
