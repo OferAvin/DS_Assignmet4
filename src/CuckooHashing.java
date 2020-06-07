@@ -131,14 +131,16 @@ public class CuckooHashing {
 				int idxToUndo = findPos(toReassign);
 				this.removeHalper(toReassign);
 
-				if(idxToUndo < this.capacity()) {	//kicked-out element is in array
+				if(idxToUndo < this.capacity() && idxToUndo > -1) {	//kicked-out element is in array
 					btLocation = backTrackLocations.get(idxToUndo);
 					btLocation.remove(btLocation.size()-1);//delete toReassign from locations 
 					array[pos] = toReassign;
 					pos = idxToUndo;
 					btLocation = backTrackLocations.get(pos);
 				}
-
+				else if (idxToUndo == -1) {
+					break;
+				}
 				else {							//kicked-out element is in stash
 					array[pos] = toReassign;
 					break;
@@ -218,7 +220,7 @@ public class CuckooHashing {
      * @return true if item was found and removed
      */
     public boolean remove(String x) {
-    	backTrackST.clear();		//
+    	backTrackST.clear();
         return removeHalper(x);
     }
     
