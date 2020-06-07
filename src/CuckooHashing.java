@@ -218,7 +218,7 @@ public class CuckooHashing {
      * @return true if item was found and removed
      */
     public boolean remove(String x) {
-    	backTrack.clear();		//
+    	backTrackST.clear();		//
         return removeHalper(x);
     }
     
